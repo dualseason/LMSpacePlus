@@ -1,6 +1,5 @@
 package edu.lingnan.controller;
 
-import edu.lingnan.entity.Student;
 import edu.lingnan.entity.Teacher;
 import edu.lingnan.service.TeacherService;
 import edu.lingnan.vo.Result;
