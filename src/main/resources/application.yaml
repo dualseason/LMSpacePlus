@@ -21,3 +21,5 @@ mybatis-plus:
   config-location: classpath:mybatis/mybatis-config.xml
   #配置 mybatis 映射文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml
+server:
+  port: 6535
