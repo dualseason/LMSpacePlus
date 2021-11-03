@@ -1,18 +1,17 @@
 package edu.lingnan.controller;
 
+import edu.lingnan.dto.result.StudentBookingInfo;
+import edu.lingnan.dto.result.StudentRecordInfo;
 import edu.lingnan.entity.Record;
 import edu.lingnan.service.RecordService;
 import edu.lingnan.vo.Result;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * @author dualseason
- */
-@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 public class RecordController {
     @Autowired
@@ -28,6 +27,7 @@ public class RecordController {
      * 请假
      * @return
      */
+    @ApiOperation("学生请假，生成一条请假记录")
     @PostMapping("/vacation")
     public Result vacation(@RequestBody Record record){
         boolean save = recordService.save(record);
@@ -49,6 +49,21 @@ public class RecordController {
             return new Result(true,recordBySId,"操作成功");
         }
         return new Result(false,null,"操作失败");
+    }
+    @ApiOperation(value = "学生请假，先得到学生的预约信息")
+    @GetMapping("/record/getStudentBookingInfo/{sId}")
+    public Result getStudentBookingInfo(@PathVariable("sId") String sId){
+        StudentBookingInfo studentBookingInfo = recordService.getStudentBookingInfo(sId);
+        return new Result(true,studentBookingInfo,"操作成功");
+    }
+    @ApiOperation(value = "学生请假，获取学生请假列表")
+    @GetMapping("/record/getStudentRecordList/{sId}")
+    public Result getStudentRecordList(@PathVariable("sId") String sId){
+        List<StudentRecordInfo> studentRecordList = recordService.getStudentRecordList(sId);
+        if(studentRecordList.size() > 0){
+            return new Result(true,studentRecordList,"操作成功");
+        }
+        return new Result(false,"null","操作失败");
     }
 
 }

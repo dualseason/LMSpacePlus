@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,11 +15,12 @@ import lombok.NoArgsConstructor;
 @TableName("student")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Student {
-
+    @ApiModelProperty(name = "sId",value = "学号",required = true)
     @JsonProperty("sId")
     @TableField("s_id")
     private String sId;
 
+    @ApiModelProperty(name = "sPassword",value = "密码",required = true)
     @TableField("s_passWord")
     @JsonProperty("sPassword")
     private String sPassword;

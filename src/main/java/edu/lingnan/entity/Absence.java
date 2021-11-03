@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,12 @@ public class Absence {
     @JsonProperty("aId")
     private Integer aId;
 
+    @ApiModelProperty(name = "bId",value = "预约编号")
     @TableField("b_id")
     @JsonProperty("bId")
     private Integer bId;
 
+    @ApiModelProperty(name = "aTime",value = "缺勤时间")
     @TableField("a_time")
     @JsonProperty("aTime")
     private String aTime;

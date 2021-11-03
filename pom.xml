@@ -67,7 +67,12 @@
             <artifactId>knife4j-spring-boot-starter</artifactId>
             <version>3.0.2</version>
         </dependency>
-
+        <!--表连接依赖 -->
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join</artifactId>
+            <version>1.1.8</version>
+        </dependency>
     </dependencies>
 
     <build>

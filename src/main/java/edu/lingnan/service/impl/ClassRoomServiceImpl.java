@@ -1,13 +1,19 @@
 package edu.lingnan.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.lingnan.entity.ClassRoom;
+import edu.lingnan.entity.Seat;
 import edu.lingnan.mapper.ClassRoomMapper;
+import edu.lingnan.mapper.SeatMapper;
 import edu.lingnan.service.ClassRoomService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Transactional
@@ -15,6 +21,8 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
 
     @Resource
     private ClassRoomMapper classRoomMapper;
+    @Resource
+    private SeatMapper seatMapper;
 
     @Override
     public boolean subtract1(Integer rId) {
@@ -23,4 +31,77 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         int i = classRoomMapper.updateById(classRoom);
         return i==0?false:true;
     }
+
+    @Override
+    public int openOrCloseClassRoom(ClassRoom classRoom) {
+        int i = -1;
+        //根据教室状态来判断打开或关闭教室
+        if("1".equals(classRoom.getRStatus()))
+        {
+            //开放教室
+            ClassRoom room = classRoomMapper.selectById(classRoom.getRId());
+            ClassRoom updateClassRoom = new ClassRoom();
+            updateClassRoom.setRStatus(classRoom.getRStatus());
+            updateClassRoom.setRCanables(room.getRNums());
+            UpdateWrapper<ClassRoom> wrapper = new UpdateWrapper<>();
+            wrapper.eq("r_id",classRoom.getRId());
+            i = classRoomMapper.update(updateClassRoom,wrapper);
+            //开放座位
+            Seat seat = new Seat();
+            seat.setSeatStatus(classRoom.getRStatus());
+            UpdateWrapper<Seat> seatUpdateWrapper = new UpdateWrapper<>();
+            seatUpdateWrapper.eq("r_id",classRoom.getRId());
+            seatMapper.update(seat,seatUpdateWrapper);
+        }
+        if("0".equals(classRoom.getRStatus()))
+        {
+            //关闭教室
+            ClassRoom classRoom2 = new ClassRoom();
+            classRoom2.setRStatus(classRoom.getRStatus());
+            classRoom2.setRCanables(0);
+            UpdateWrapper<ClassRoom> roomUpdateWrapper = new UpdateWrapper<>();
+            roomUpdateWrapper.eq("r_id",classRoom.getRId());
+            i = classRoomMapper.update(classRoom2,roomUpdateWrapper);
+            //关闭座位
+            Seat seat = new Seat();
+            seat.setSeatStatus(classRoom.getRStatus());
+            UpdateWrapper<Seat> seatUpdateWrapper = new UpdateWrapper<>();
+            seatUpdateWrapper.eq("r_id",classRoom.getRId());
+            seatMapper.update(seat,seatUpdateWrapper);
+        }
+
+
+        return i;
+    }
+
+    @Override
+    public int addOneClassRooms(ClassRoom classRoom) {
+        classRoom.setRStatus("1");
+        classRoom.setRCanables(classRoom.getRNums());
+        classRoom.setRId(null);
+        int i = -1;
+        i = classRoomMapper.insert(classRoom);
+        QueryWrapper<ClassRoom> wrapper = new QueryWrapper<>();
+        wrapper.select("MAX(r_id) as r_id");
+        List<ClassRoom> classRooms = classRoomMapper.selectList(wrapper);
+        ClassRoom classRoom2 = classRooms.get(0);
+        Integer rId = classRoom2.getRId();
+        Seat seat = new Seat();
+        seat.setRId(rId);
+        seat.setSeatStatus("1");
+        for (int j = 1; j <=classRoom.getRNums(); j++) {
+            seat.setSeatNum(String.valueOf(j));
+            seatMapper.insert(seat);
+        }
+        return i;
+    }
+    //查询所有开放的教室，用于学生预约教室
+    @Override
+    public List<ClassRoom> findUsefulClassRoomsList() {
+        QueryWrapper<ClassRoom> wrapper = new QueryWrapper<>();
+        wrapper.eq("r_status","1").gt("r_canables",0);
+        List<ClassRoom> classRooms = classRoomMapper.selectList(wrapper);
+        return classRooms;
+    }
+
 }

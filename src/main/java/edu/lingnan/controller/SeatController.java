@@ -1,12 +1,16 @@
 package edu.lingnan.controller;
 
 import edu.lingnan.dto.GenSeatReq;
+import edu.lingnan.dto.SeatReturn;
+import edu.lingnan.dto.result.StudentBookingInfo;
 import edu.lingnan.entity.Booking;
 import edu.lingnan.entity.Seat;
 import edu.lingnan.service.BookingService;
 import edu.lingnan.service.ClassRoomService;
+import edu.lingnan.service.RecordService;
 import edu.lingnan.service.SeatService;
 import edu.lingnan.vo.Result;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -17,10 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author dualseason
- */
-@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 public class SeatController {
     @Autowired
@@ -31,6 +31,9 @@ public class SeatController {
 
     @Autowired
     private ClassRoomService room;
+
+    @Autowired
+    private RecordService recordService;
 
     @GetMapping("/seats")
     public Result findAll() {
@@ -98,6 +101,25 @@ public class SeatController {
         booking.setBUseful(false);
         boolean update = bookingService.updateById(booking);
         if (update){
+            return new Result(true,1,"操作成功");
+        }
+        return new Result(false,0,"操作失败");
+    }
+    @ApiOperation(value = "归还座位：先得到座位相关信息")
+    @GetMapping("/seat/returnSeatFirst/{sId}")
+    public Result returnSeatFirst(@PathVariable("sId") String sId){
+        StudentBookingInfo bookingInfo = recordService.getStudentBookingInfo(sId);
+        return new Result(true,bookingInfo,"操作成功");
+    }
+    @ApiOperation(value = "归还座位：根据预约编号归还座位")
+    @PostMapping("/seat/returnSeatSecond")
+    public Result returnSeatSecond(@RequestBody SeatReturn seatReturn){
+        Booking booking = new Booking();
+        booking.setBEndTime(seatReturn.getBEndTime());
+        booking.setBId(seatReturn.getBId());
+        int i = seatService.returnSeat(booking);
+        if(i > 0)
+        {
             return new Result(true,1,"操作成功");
         }
         return new Result(false,0,"操作失败");

@@ -1,22 +1,23 @@
 package edu.lingnan.controller;
 
 import edu.lingnan.dto.AbsenceReq;
+import edu.lingnan.dto.AbsenceReq2;
 import edu.lingnan.entity.Absence;
 import edu.lingnan.entity.Booking;
 import edu.lingnan.service.AbsenceService;
 import edu.lingnan.service.BookingService;
 import edu.lingnan.util.DateUtil;
 import edu.lingnan.vo.Result;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author dualseason
- */
-@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 public class AbsenceController {
     @Autowired
@@ -55,5 +56,27 @@ public class AbsenceController {
             return new Result(true,1,"操作成功");
         }
         return new Result(false,0,"操作失败");
+    }
+    @ApiOperation(value = "考勤操作")
+    @PostMapping("/addOrDeleteAbsence")
+    public Result addOrDeleteAbsence(@RequestBody AbsenceReq2 absenceReq2){
+        if("false".equals(absenceReq2.getTodayStatus())){
+            Absence absence = new Absence();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+            absence.setATime(format.format(new Date()));
+            absence.setBId(absenceReq2.getBId());
+            boolean save = absenceService.save(absence);
+
+            return new Result(true,1,"操作成功");
+
+
+        }else {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("b_id",absenceReq2.getBId());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+            hashMap.put("a_time",format.format(new Date()));
+            boolean b = absenceService.removeByMap(hashMap);
+            return new Result(true,1,"操作成功");
+        }
     }
 }
