@@ -1,6 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/booking
+#    username: root
+#    password: 123456
     url: jdbc:mysql://159.75.103.206:3306/lmspace
     username: LMSpace
     password: HRZKGPF7C5t4ddBz

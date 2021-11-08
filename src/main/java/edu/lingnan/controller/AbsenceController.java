@@ -60,6 +60,13 @@ public class AbsenceController {
     @ApiOperation(value = "考勤操作")
     @PostMapping("/addOrDeleteAbsence")
     public Result addOrDeleteAbsence(@RequestBody AbsenceReq2 absenceReq2){
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("b_id",absenceReq2.getBId());
+        map.put("b_useFul",1);
+        boolean b1 = bookingService.queryBookingAbleUseful(map);
+        if(!b1){
+            return new Result(false,0,"该预约记录不存在或已失效");
+        }
         if("false".equals(absenceReq2.getTodayStatus())){
             Absence absence = new Absence();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");

@@ -50,6 +50,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                         .eq(ClassRoom::getRStatus,1)
 //
         );
+         absenceService.getCurrentNoRecordBookingList(bookingInfos);
         List<Absence> absences = absenceMapper.selectList(null);
         /*
          * 该for循环用于添加正在生效的预约记录的当天考勤状态，通过缺勤记录和预约记录中的相同预约编号，然后在判断缺勤记录的时间和当天时间是否一样
@@ -136,5 +137,14 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             e.printStackTrace();
         }
         return i;
+    }
+
+    @Override
+    public boolean queryBookingAbleUseful(HashMap<String, Object> map) {
+        List<Booking> bookings = bookingMapper.selectByMap(map);
+        if(bookings.size() > 0){
+            return true;
+        }
+        return false;
     }
 }

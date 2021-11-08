@@ -55,6 +55,18 @@ public class ClassRoomController {
     @ApiOperation(value = "管理教室页面,用于打开或关闭教室")
     @PostMapping("/openOrCloseRoom")
     public Result openOrCloseRoom(@RequestBody ClassRoom classRoom) {
+        if("0".equals(classRoom.getRStatus())){
+            boolean b = classRoomService.checkClassRoomCanOrNotClose(classRoom);
+            if(!b){
+                return new Result(false,0,"该教室座位已被预约，暂时无法关闭");
+            }
+        }
+        if("1".equals(classRoom.getRStatus())){
+            boolean b = classRoomService.checkClassRoomCanOrNotClose(classRoom);
+            if(!b){
+                return new Result(false,0,"该教室座位打开不了");
+            }
+        }
         int i = classRoomService.openOrCloseClassRoom(classRoom);
         if (i > 0) {
             return new Result(true, 1, "操作成功");
@@ -65,6 +77,10 @@ public class ClassRoomController {
     @ApiOperation(value = "增加一间教室")
     @PostMapping("/addOneClassRooms")
     public Result addOneClassRooms(@RequestBody ClassRoomReq classRoomReq){
+        boolean b = classRoomService.checkClassRoomCanOrNotAdd(classRoomReq);
+        if(!b){
+            return new Result(false,0,"该教室已存在,添加失败");
+        }
         ClassRoom classRoom = new ClassRoom();
         classRoom.setRRoom(classRoomReq.getRRoom());
         classRoom.setRNums(classRoomReq.getRNums());

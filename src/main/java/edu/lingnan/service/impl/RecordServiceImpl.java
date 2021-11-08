@@ -9,16 +9,16 @@ import edu.lingnan.entity.*;
 import edu.lingnan.entity.Record;
 import edu.lingnan.mapper.BookingMapper;
 import edu.lingnan.mapper.RecordMapper;
+import edu.lingnan.service.BookingService;
 import edu.lingnan.service.RecordService;
 import edu.lingnan.service.StudentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,5 +88,29 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
             recordDays += aLong;
         }
         return recordDays;
+    }
+//查询该预约编号对应的学生能否请假，如果该学生已在请假的时间段内请过假，就请假失败，防止学生无限请假
+    @Override
+    public Boolean queryStudentCanOrNotRecord(Record record) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_id",record.getBId());
+        List<Record> records = recordMapper.selectByMap(map);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        try {
+            Date parse = format.parse(record.getReStartTime());
+            for (Record record1 : records) {
+                String startTime = record1.getReStartTime();
+                String days = record1.getReDays();
+                Date parse1 = format.parse(startTime);
+                if((parse1.getTime()+(Integer.valueOf(days) - 1)*24*60*60*1000)>=parse.getTime()){
+                    return false;
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 }

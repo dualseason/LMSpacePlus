@@ -3,6 +3,7 @@ package edu.lingnan.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.lingnan.dto.ClassRoomReq;
 import edu.lingnan.entity.ClassRoom;
 import edu.lingnan.entity.Seat;
 import edu.lingnan.mapper.ClassRoomMapper;
@@ -102,6 +103,35 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         wrapper.eq("r_status","1").gt("r_canables",0);
         List<ClassRoom> classRooms = classRoomMapper.selectList(wrapper);
         return classRooms;
+    }
+
+    @Override
+    public boolean checkClassRoomCanOrNotClose(ClassRoom classRoom) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("r_id",classRoom.getRId());
+        List<ClassRoom> classRooms = classRoomMapper.selectByMap(map);
+        if(classRooms.size() > 0){
+            ClassRoom classRoom1 = classRooms.get(0);
+            if("0".equals(classRoom.getRStatus()) && classRoom1.getRCanables() == classRoom1.getRNums()){
+                return true;
+            }
+            if("1".equals(classRoom.getRStatus()) && classRoom1.getRCanables()==0){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkClassRoomCanOrNotAdd(ClassRoomReq classRoomReq0) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("r_building",classRoomReq0.getRBuilding());
+        map.put("r_room",classRoomReq0.getRRoom());
+        List<ClassRoom> classRooms = classRoomMapper.selectByMap(map);
+        if(classRooms.size() > 0){
+            return false;
+        }
+        return true;
     }
 
 }

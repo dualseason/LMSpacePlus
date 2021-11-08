@@ -38,6 +38,10 @@ public class TeacherController {
 
     @PostMapping("/teacher/register")
     public Result register(@RequestBody Teacher teacher) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("t_num",teacher.getTNum());
+        boolean b = teacherService.checkTeacher(map);
+        if(b)return new Result(false,0,"该老师已经存在");
         boolean save = teacherService.save(teacher);
         if (save) {
             return new Result(true, 1, "操作成功");

@@ -7,4 +7,5 @@ import java.util.Map;
 
 public interface TeacherService extends IService<Teacher> {
     Teacher checkLogin(Map<String,Object> map);
+    boolean checkTeacher(Map<String,Object> map);
 }

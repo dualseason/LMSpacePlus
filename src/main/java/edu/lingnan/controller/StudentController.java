@@ -42,6 +42,12 @@ public class StudentController {
 
     @PostMapping("/student/register")
     public Result register(@RequestBody Student student) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("s_id",student.getSId());
+        Student checkStudent = studentService.checkLogin(map);
+        if(checkStudent != null){
+            return new Result(false,0,"该学生已存在");
+        }
         student.setSStatus("2");
         student.setSClass(null);
         student.setSCollege(null);

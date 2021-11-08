@@ -27,4 +27,11 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             return teachers.get(0);
         }
     }
+//检查老师是否存在
+    @Override
+    public boolean checkTeacher(Map<String,Object> map) {
+        List<Teacher> teachers = teacherMapper.selectByMap(map);
+        if(teachers.size() > 0)return true;
+        return false;
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -51,6 +52,10 @@ public class BookingController {
     @ApiOperation(value = "续约界面：提供续约的相关信息")
     @GetMapping("/booking/provideRenewalStudentInfo/{sId}")
     public Result provideRenewalStudentInfo(@PathVariable("sId") String sId){
+        boolean b = bookingService.queryStudentUserfulBookingInfo(sId);
+        if(!b){
+            return new Result(false,"null","该学生没有预约到座位");
+        }
         StudentBookingInfo studentBookingInfo = studentService.queryUseFulStudentBookingInfo(sId);
         long[] longs = bookingService.getTotalBookingDays(sId);
         studentBookingInfo.setTotalBookingDays(longs[0]);
@@ -61,6 +66,13 @@ public class BookingController {
     @ApiOperation(value = "续约界面：续约")
     @GetMapping("/booking/renewal/{bId}")
     public Result renewal(@PathVariable("bId") Integer bId){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_id",bId);
+        map.put("b_useFul",1);
+        boolean b = bookingService.queryBookingAbleUseful(map);
+        if(!b){
+            return new Result(false,"null","操作失败，不存在该预约编号或该预约编号已失效");
+        }
         int i = bookingService.renewal(bId);
         if(i > 0)
         {

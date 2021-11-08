@@ -108,12 +108,23 @@ public class SeatController {
     @ApiOperation(value = "归还座位：先得到座位相关信息")
     @GetMapping("/seat/returnSeatFirst/{sId}")
     public Result returnSeatFirst(@PathVariable("sId") String sId){
+        boolean b = bookingService.queryStudentUserfulBookingInfo(sId);
+        if(!b){
+            return new Result(false,"null","该学生没有预约到座位");
+        }
         StudentBookingInfo bookingInfo = recordService.getStudentBookingInfo(sId);
         return new Result(true,bookingInfo,"操作成功");
     }
     @ApiOperation(value = "归还座位：根据预约编号归还座位")
     @PostMapping("/seat/returnSeatSecond")
     public Result returnSeatSecond(@RequestBody SeatReturn seatReturn){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_id",seatReturn.getBId());
+        map.put("b_useFul",1);
+        boolean b = bookingService.queryBookingAbleUseful(map);
+        if(!b){
+            return new Result(false,"null","操作失败，该预约座位不存在或预约信息已失效");
+        }
         Booking booking = new Booking();
         booking.setBEndTime(seatReturn.getBEndTime());
         booking.setBId(seatReturn.getBId());

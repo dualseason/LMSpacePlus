@@ -14,4 +14,5 @@ public interface RecordService extends IService<Record> {
     StudentBookingInfo getStudentBookingInfo(String sId);
     List<StudentRecordInfo> getStudentRecordList(String sId);
     Long getAllRecordDays(Collection<Integer> bIds);
+    Boolean queryStudentCanOrNotRecord(Record record);
 }
