@@ -13,4 +13,5 @@ public interface BookingService extends IService<Booking> {
     long[] getTotalBookingDays(String sId);
     int renewal(Integer bId);
     boolean queryBookingAbleUseful(HashMap<String,Object> map);
+    List<Booking> updateBookingInfoTiming();
 }

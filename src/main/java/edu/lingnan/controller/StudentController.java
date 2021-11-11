@@ -49,10 +49,6 @@ public class StudentController {
             return new Result(false,0,"该学生已存在");
         }
         student.setSStatus("2");
-        student.setSClass(null);
-        student.setSCollege(null);
-        student.setSGrade(null);
-        student.setSName(null);
         boolean save = studentService.save(student);
         if (save) {
             return new Result(true, 1, "操作成功");
@@ -145,5 +141,14 @@ public class StudentController {
             return new Result(true,studentBookingInfo,"操作成功");
         }
         return new Result(false,"null","操作失败");
+    }
+    @ApiOperation(value = "更新学生信息")
+    @PostMapping("/student/updateStudentInfo")
+    public Result updateStudentInfo(@RequestBody Student student){
+        boolean b = studentService.updateStudentInfo(student);
+        if(b){
+            return new Result(true,1,"操作成功");
+        }
+        return new Result(false,0,"操作失败，可能改学生不存在");
     }
 }

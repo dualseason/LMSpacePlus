@@ -1,5 +1,6 @@
 package edu.lingnan.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import edu.lingnan.dto.result.BookingInfo;
@@ -9,10 +10,12 @@ import edu.lingnan.entity.ClassRoom;
 import edu.lingnan.entity.Seat;
 import edu.lingnan.mapper.AbsenceMapper;
 import edu.lingnan.mapper.BookingMapper;
-import edu.lingnan.service.AbsenceService;
-import edu.lingnan.service.BookingService;
-import edu.lingnan.service.RecordService;
+import edu.lingnan.mapper.ClassRoomMapper;
+import edu.lingnan.mapper.SeatMapper;
+import edu.lingnan.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,10 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
     private AbsenceService absenceService;
     @Autowired
     private RecordService recordService;
+    @Autowired
+    private SeatMapper seatMapper;
+    @Autowired
+    private ClassRoomMapper classRoomMapper;
     @Override
     public List<BookingInfo> queryUserfulBookingList() {
         //查询所有有效的预约记录及座位教室信息
@@ -57,6 +64,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
          * 如果缺勤记录的时间和当天时间一样的话，则该考勤状态为false（缺勤）
          * */
         for (int i = 0; i < bookingInfos.size(); i++) {
+            bookingInfos.get(i).setTodayStatus(true);
             for (int j = 0; j < absences.size(); j++) {
                 if(absences.get(j).getBId()==bookingInfos.get(i).getBId())
                 {
@@ -69,9 +77,9 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                     }
 
                 }
-                if(j==absences.size()-1){
-                    bookingInfos.get(i).setTodayStatus(true);
-                }
+//                if(j==absences.size()-1){
+//                    bookingInfos.get(i).setTodayStatus(true);
+//                }
             }
         }
         return bookingInfos;
@@ -146,5 +154,47 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             return true;
         }
         return false;
+    }
+    @Scheduled(cron ="0 0/1 * * * ?")
+    //定时更新预约信息
+    @Override
+    public List<Booking> updateBookingInfoTiming() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_useFul",1);
+        List<Booking> bookings = bookingMapper.selectByMap(map);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        String format1 = format.format(new Date());
+        try {
+            //当天时间
+            Date parse = format.parse(format1);
+            for (int i = 0; i < bookings.size(); i++) {
+                Booking booking = bookings.get(i);
+                if(parse.getTime() > format.parse(booking.getBEndTime()).getTime()){
+                    booking.setBUseful(false);
+                    bookingMapper.updateById(booking);
+                    //***********************
+                    UpdateWrapper<Seat> wrapper = new UpdateWrapper<>();
+                    wrapper.eq("seat_id",booking.getSeatId());
+                    Seat seat = new Seat();
+                    seat.setSeatStatus("1");
+                    seatMapper.update(seat,wrapper);
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("seat_id",booking.getSeatId());
+                    List<Seat> seats = seatMapper.selectByMap(hashMap);
+                    Seat seat1 = seats.get(0);
+                    HashMap<String, Object> hashMap1 = new HashMap<>();
+                    hashMap1.put("r_id",seat1.getRId());
+                    List<ClassRoom> classRooms = classRoomMapper.selectByMap(hashMap1);
+                    ClassRoom classRoom = classRooms.get(0);
+                    classRoom.setRCanables(classRoom.getRCanables()+1);
+                    classRoomMapper.updateById(classRoom);
+                    continue;
+                }
+                bookings.remove(i);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return bookings;
     }
 }

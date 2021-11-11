@@ -116,4 +116,30 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
 
         return studentBookingInfo;
     }
+    @Override
+    public boolean updateStudentInfo(Student student){
+        UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
+        wrapper.eq("s_id",student.getSId());
+        if(student.getSPassword()!=null &&student.getSPassword()!=""){
+            wrapper.set("s_passWord",student.getSPassword());
+        }
+        if(student.getSClass()!=null &&student.getSClass()!=""){
+            wrapper.set("s_class",student.getSClass());
+        }
+        if(student.getSCollege()!=null&&student.getSCollege()!="")
+        {
+            wrapper.set("s_college",student.getSCollege());
+        }
+        if(student.getSGrade()!=null&&student.getSGrade()!=""){
+            wrapper.set("s_grade",student.getSGrade());
+        }
+        if(student.getSName()!=null&&student.getSName()!=""){
+            wrapper.set("s_name",student.getSName());
+        }
+        boolean update = this.update(wrapper);
+        if(update){
+            return true;
+        }
+        return false;
+    }
 }

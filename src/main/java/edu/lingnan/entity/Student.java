@@ -29,18 +29,22 @@ public class Student {
     @JsonProperty("sStatus")
     private String sStatus;
 
+    @ApiModelProperty(name="sName",value = "名称")
     @TableField("s_name")
     @JsonProperty("sName")
     private String sName;
 
+    @ApiModelProperty(name="sGrade",value = "年级")
     @TableField("s_grade")
     @JsonProperty("sGrade")
     private String sGrade;
 
+    @ApiModelProperty(name="sClass",value = "班级")
     @TableField("s_class")
     @JsonProperty("sClass")
     private String sClass;
 
+    @ApiModelProperty(name="sCollege",value = "学院")
     @TableField("s_college")
     @JsonProperty("sCollege")
     private String sCollege;

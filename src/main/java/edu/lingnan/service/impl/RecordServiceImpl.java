@@ -99,11 +99,12 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
         SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
         try {
             Date parse = format.parse(record.getReStartTime());
+            Long endTime = parse.getTime() + (Integer.valueOf(record.getReDays()) - 1)*24*60*60*1000;
             for (Record record1 : records) {
                 String startTime = record1.getReStartTime();
                 String days = record1.getReDays();
                 Date parse1 = format.parse(startTime);
-                if((parse1.getTime()+(Integer.valueOf(days) - 1)*24*60*60*1000)>=parse.getTime()){
+                if((parse1.getTime()+(Integer.valueOf(days) - 1)*24*60*60*1000)>=parse.getTime() && endTime >=parse1.getTime()){
                     return false;
                 }
             }

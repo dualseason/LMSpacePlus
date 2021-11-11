@@ -47,8 +47,8 @@ public class AbsenceServiceImpl extends ServiceImpl<AbsenceMapper, Absence> impl
                 try {
                     Date parse = format.parse(records.get(j).getReStartTime());
                     Date parse1 = format.parse(format1);
-                    //如果请假的时间大于当天时间
-                    if((parse.getTime() + Integer.valueOf(records.get(j).getReDays())*24*60*60*1000) >= parse1.getTime()){
+                    //如果当天时间在请假时间之间
+                    if((parse.getTime() + Integer.valueOf(records.get(j).getReDays())*24*60*60*1000) >= parse1.getTime()&&parse1.getTime()>=parse.getTime()){
                         bookingInfos.remove(i);
                         i--;
                         break;

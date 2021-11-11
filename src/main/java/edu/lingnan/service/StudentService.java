@@ -13,4 +13,5 @@ public interface StudentService extends IService<Student> {
     int updateOrDeleteStudentStatus(Student student);
     boolean checkStudent(Student student);
     StudentBookingInfo queryUseFulStudentBookingInfo(String sId);
+    public boolean updateStudentInfo(Student student);
 }
