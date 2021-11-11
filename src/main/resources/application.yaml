@@ -1,9 +1,12 @@
 spring:
   datasource:
     driver-class-name: oracle.jdbc.driver.OracleDriver
-    url: jdbc:oracle:thin:@159.75.103.206:1521:helowin
-    username: lmspace
-    password: chen0215
+    url: jdbc:oracle:thin:@192.168.198.13:1521:iddbsvr1
+    username: usr_mkj
+    password: B9MV2T#CMx6Q
+#    url: jdbc:oracle:thin:@159.75.103.206:1521:helowin
+#    username: lmspace
+#    password: chen0215
 #    driver-class-name: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/booking
 #    username: root
