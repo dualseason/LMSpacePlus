@@ -57,9 +57,10 @@ public class BookingController {
             return new Result(false,"null","该学生没有预约到座位");
         }
         StudentBookingInfo studentBookingInfo = studentService.queryUseFulStudentBookingInfo(sId);
-        long[] longs = bookingService.getTotalBookingDays(sId);
+        long[] longs = bookingService.getTotalBookingDays2(sId);
         studentBookingInfo.setTotalBookingDays(longs[0]);
-        studentBookingInfo.setActualBookingDays(longs[1]);
+
+        studentBookingInfo.setActualBookingDays(longs[0] - longs[1]);
 
         return new Result(true,studentBookingInfo,"操作成功");
     }

@@ -79,17 +79,52 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
 
     @Override
     public Long getAllRecordDays(Collection<Integer> bIds) {
-        QueryWrapper<Record> wrapper = new QueryWrapper<>();
-        wrapper.in("b_id",bIds);
-        List<Record> records = recordMapper.selectList(wrapper);
         long recordDays = 0;
-        for (Record record : records) {
-            long aLong = Long.parseLong(record.getReDays());
-            recordDays += aLong;
+        if(bIds.size() > 0){
+            QueryWrapper<Record> wrapper = new QueryWrapper<>();
+            wrapper.in("b_id",bIds);
+            List<Record> records = recordMapper.selectList(wrapper);
+            for (Record record : records) {
+                long aLong = Long.parseLong(record.getReDays());
+                recordDays += aLong;
+            }
+        }
+
+        return recordDays;
+    }
+
+    @Override
+    public Long getUsefulBookingRecordDays(Integer bId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_id",bId);
+        Long recordDays = (long) 0;
+        //①通过预约编号查请假表
+        List<Record> records = recordMapper.selectByMap(map);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        String format1 = format.format(new Date());
+        try {
+            Date currentTime = format.parse(format1);
+            for (Record record : records) {
+                Date startTime = format.parse(record.getReStartTime());
+//                ②找请假开始时间小于当天时间
+                if(startTime.getTime() < currentTime.getTime()){
+                    long endTime = startTime.getTime() + (Integer.valueOf(record.getReDays())-1)*24*60*60*1000;
+//                    ③如果结束时间小于当天时间
+                    if(endTime < currentTime.getTime()){
+                        recordDays += Integer.valueOf(record.getReDays());
+                    }else {
+                        long days = (currentTime.getTime() - startTime.getTime())/24/60/60/1000;
+                        recordDays += days;
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
         return recordDays;
     }
-//查询该预约编号对应的学生能否请假，如果该学生已在请假的时间段内请过假，就请假失败，防止学生无限请假
+
+    //查询该预约编号对应的学生能否请假，如果该学生已在请假的时间段内请过假，就请假失败，防止学生无限请假
     @Override
     public Boolean queryStudentCanOrNotRecord(Record record) {
         HashMap<String, Object> map = new HashMap<>();

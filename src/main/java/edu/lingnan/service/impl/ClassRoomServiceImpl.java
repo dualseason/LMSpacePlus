@@ -3,9 +3,12 @@ package edu.lingnan.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import edu.lingnan.dto.ClassRoomReq;
+import edu.lingnan.entity.Booking;
 import edu.lingnan.entity.ClassRoom;
 import edu.lingnan.entity.Seat;
+import edu.lingnan.mapper.BookingMapper;
 import edu.lingnan.mapper.ClassRoomMapper;
 import edu.lingnan.mapper.SeatMapper;
 import edu.lingnan.service.ClassRoomService;
@@ -24,7 +27,8 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
     private ClassRoomMapper classRoomMapper;
     @Resource
     private SeatMapper seatMapper;
-
+    @Resource
+    private BookingMapper bookingMapper;
     @Override
     public boolean subtract1(Integer rId) {
         ClassRoom classRoom = classRoomMapper.selectById(rId);
@@ -77,8 +81,8 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
 
     @Override
     public int addOneClassRooms(ClassRoom classRoom) {
-        classRoom.setRStatus("1");
-        classRoom.setRCanables(classRoom.getRNums());
+        classRoom.setRStatus("0");
+        classRoom.setRCanables(0);
         classRoom.setRId(null);
         int i = -1;
         i = classRoomMapper.insert(classRoom);
@@ -89,7 +93,7 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         Integer rId = classRoom2.getRId();
         Seat seat = new Seat();
         seat.setRId(rId);
-        seat.setSeatStatus("1");
+        seat.setSeatStatus("0");
         for (int j = 1; j <=classRoom.getRNums(); j++) {
             seat.setSeatNum(String.valueOf(j));
             seatMapper.insert(seat);
@@ -112,10 +116,10 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         List<ClassRoom> classRooms = classRoomMapper.selectByMap(map);
         if(classRooms.size() > 0){
             ClassRoom classRoom1 = classRooms.get(0);
-            if("0".equals(classRoom.getRStatus()) && classRoom1.getRCanables() == classRoom1.getRNums()){
+            if("0".equals(classRoom.getRStatus()) && classRoom1.getRCanables() == classRoom1.getRNums()&&classRoom1.getRStatus().equals("1")){
                 return true;
             }
-            if("1".equals(classRoom.getRStatus()) && classRoom1.getRCanables()==0){
+            if("1".equals(classRoom.getRStatus()) && classRoom1.getRCanables()==0 && classRoom1.getRStatus().equals("0")){
                 return true;
             }
         }
@@ -131,6 +135,25 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         if(classRooms.size() > 0){
             return false;
         }
+        return true;
+    }
+    //删除教室，首先判断该教室有没有被预约过
+    @Override
+    public boolean deleteClassRoom(Integer rId) {
+        List<Seat> seats = bookingMapper.selectJoinList(Seat.class,
+                new MPJLambdaWrapper<>()
+                        .selectAs(Seat::getSeatId, Seat::getSeatId)
+                        .innerJoin(Seat.class, Seat::getSeatId, Booking::getSeatId)
+                        .eq(Seat::getRId, rId)
+        );
+        if(seats.size()>0){
+
+            return false;
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("r_id",rId);
+        classRoomMapper.deleteByMap(map);
+        seatMapper.deleteByMap(map);
         return true;
     }
 

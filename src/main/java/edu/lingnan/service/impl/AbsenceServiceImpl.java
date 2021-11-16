@@ -25,12 +25,35 @@ public class AbsenceServiceImpl extends ServiceImpl<AbsenceMapper, Absence> impl
     private RecordMapper recordMapper;
     @Override
     public Long getTotalAbsenceDays(Collection<Integer> bIds) {
-        QueryWrapper<Absence> wrapper = new QueryWrapper<>();
-        wrapper.in("b_id",bIds);
-        List<Absence> absences = absenceMapper.selectList(wrapper);
-        long totalDays = (long) absences.size();
+        long totalDays = 0;
+        if(bIds.size() > 0){
+            QueryWrapper<Absence> wrapper = new QueryWrapper<>();
+            wrapper.in("b_id",bIds);
+            List<Absence> absences = absenceMapper.selectList(wrapper);
+            totalDays = (long) absences.size();
+        }
+
         return totalDays;
     }
+
+    @Override
+    public Long getUsefulBookingAbsenceDays(Integer bid) {
+
+        Long absenceDays = (long)0;
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("b_id",bid);
+        List<Absence> absences = absenceMapper.selectByMap(map);
+        absenceDays =(long) absences.size();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        String format1 = format.format(new Date());
+        for (int i = 0; i < absences.size(); i++) {
+            if(format1.equals(absences.get(i).getATime())){
+                absenceDays -= 1;
+            }
+        }
+        return absenceDays;
+    }
+
     //从当天的预约列表中得到当天没有请假的预约列表，因为只有当天没有请假的预约才能够让其缺勤
     @Override
     public List<BookingInfo> getCurrentNoRecordBookingList(List<BookingInfo> bookingInfos) {

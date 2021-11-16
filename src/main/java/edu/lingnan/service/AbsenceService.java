@@ -9,5 +9,6 @@ import java.util.List;
 
 public interface AbsenceService extends IService<Absence> {
     Long getTotalAbsenceDays(Collection<Integer> bIds);
+    Long getUsefulBookingAbsenceDays(Integer bid);
     List<BookingInfo> getCurrentNoRecordBookingList(List<BookingInfo> bookingInfos);
 }

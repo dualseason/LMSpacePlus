@@ -2,16 +2,15 @@ package edu.lingnan.controller;
 
 import edu.lingnan.dto.ClassRoomReq;
 import edu.lingnan.entity.ClassRoom;
+import edu.lingnan.service.BookingService;
 import edu.lingnan.service.ClassRoomService;
 import edu.lingnan.vo.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,11 @@ public class ClassRoomController {
         }
         int i = classRoomService.openOrCloseClassRoom(classRoom);
         if (i > 0) {
-            return new Result(true, 1, "操作成功");
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("r_id",classRoom.getRId());
+            List<ClassRoom> classRooms = classRoomService.listByMap(map);
+
+            return new Result(true, classRooms.get(0), "操作成功");
         } else {
             return new Result(false, 0, "操作失败");
         }
@@ -90,6 +93,15 @@ public class ClassRoomController {
             return new Result(true,1,"操作成功");
         }
         return new Result(false,0,"操作失败");
+    }
+    @ApiOperation(value = "删除一间教室")
+    @GetMapping("/deleteOneClassRoom/{rId}")
+    public Result deleteOneClassRoom(@PathVariable("rId") Integer rId){
+        boolean b = classRoomService.deleteClassRoom(rId);
+        if(b){
+            return new Result(true,1,"操作成功");
+        }
+        return new Result(false,0,"删除失败，可能该教室已有预约信息");
     }
 
 

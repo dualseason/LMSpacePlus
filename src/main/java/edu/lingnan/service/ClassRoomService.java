@@ -13,4 +13,5 @@ public interface ClassRoomService extends IService<ClassRoom> {
     List<ClassRoom> findUsefulClassRoomsList();
     boolean checkClassRoomCanOrNotClose(ClassRoom classRoom);
     boolean checkClassRoomCanOrNotAdd(ClassRoomReq classRoomReq0);
+    boolean deleteClassRoom(Integer rId);
 }

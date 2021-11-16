@@ -47,7 +47,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         List<BookingInfo> bookingInfos = bookingMapper.selectJoinList(BookingInfo.class,
                 new MPJLambdaWrapper<>()
                         .selectAs(Booking::getBId, BookingInfo::getBId)//参数，要查询的字段，并指定别名
-                        .selectAs(Booking::getSeatId, BookingInfo::getSeatId)
+                        .selectAs(Seat::getSeatNum, BookingInfo::getSeatId)
                         .selectAs(ClassRoom::getRRoom, BookingInfo::getRRoom)
                         .selectAs(ClassRoom::getRBuilding, BookingInfo::getRBuilding)
 //                        .leftJoin(Booking.class, Booking::getSeatId, Seat::getSeatId)
@@ -126,7 +126,57 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         longs[1] = totalAbsenceDays + allRecordDays;
         return longs;
     }
-//学生续约，延长学生预约座位时间
+
+    @Override
+    public long[] getTotalBookingDays2(String sId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("s_id",sId);
+        List<Booking> bookings = bookingMapper.selectByMap(map);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-d");
+        long totalDays = 0;
+        Integer currentBid = 0;
+        ArrayList<Integer> integers = new ArrayList<>();
+        for (Booking booking : bookings) {
+            String startTime = booking.getBStartTime();
+            String endTime = booking.getBEndTime();
+            if(booking.getBUseful()==false){
+                integers.add(booking.getBId());
+            }else {
+                currentBid = booking.getBId();
+            }
+
+            try {
+                Date parse = simpleDateFormat.parse(startTime);
+                Date parse2 = simpleDateFormat.parse(endTime);
+                long days = (parse2.getTime() - parse.getTime()) /24/60/60/1000 + 1;
+                totalDays +=  days;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        Long totalAbsenceDays = absenceService.getTotalAbsenceDays(integers) + absenceService.getUsefulBookingAbsenceDays(currentBid);
+        Long allRecordDays = recordService.getAllRecordDays(integers) + recordService.getUsefulBookingRecordDays(currentBid);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        HashMap<String, Object> map1 = new HashMap<>();
+        map1.put("b_id",currentBid);
+        List<Booking> map2 = bookingMapper.selectByMap(map1);
+        String endTime = map2.get(0).getBEndTime();
+        String format1 = format.format(new Date());
+        long days = 0;
+        try {
+            Date date1 = format.parse(endTime);
+            Date parse2 = format.parse(format1);
+            days = (date1.getTime() - parse2.getTime())/24/60/60/1000 + 1;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long[] longs = new long[2];
+        longs[0] = totalDays;
+        longs[1] = totalAbsenceDays + allRecordDays + days;
+        return longs;
+    }
+
+    //学生续约，延长学生预约座位时间
     @Override
     public int renewal(Integer bId) {
         HashMap<String, Object> map = new HashMap<>();
