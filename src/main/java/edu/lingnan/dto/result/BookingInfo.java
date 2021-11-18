@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingInfo {
+    @ApiModelProperty(name = "rId",value = "教室编号",example = "")
+    private Integer rId;
     @ApiModelProperty(name="bId",value = "预约编号",example = "")
     private Integer bId;
     @ApiModelProperty(name = "seatId",value = "座位编号",example = "")

@@ -39,9 +39,17 @@ public class BookingController {
         return new Result(true, list, "操作成功");
     }
     @ApiOperation(value = "查询所有有效的预约记录，用于考勤")
-    @GetMapping("/queryUserfulBookingList")
-    public Result queryUserfulBookingList(){
+    @GetMapping("/queryUserfulBookingList/{rId}")
+    public Result queryUserfulBookingList(@PathVariable("rId") Integer rId){
         List<BookingInfo> bookingInfos = bookingService.queryUserfulBookingList();
+        for (int i = 0; i < bookingInfos.size(); i++) {
+            BookingInfo info = bookingInfos.get(i);
+            if(info.getRId() != rId){
+                bookingInfos.remove(i);
+                i--;
+            }
+
+        }
         if(!CollectionUtils.isEmpty(bookingInfos)){
             return new Result(true,bookingInfos,"操作成功");
         }

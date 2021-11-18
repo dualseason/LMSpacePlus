@@ -157,4 +157,12 @@ public class ClassRoomServiceImpl extends ServiceImpl<ClassRoomMapper, ClassRoom
         return true;
     }
 
+    @Override
+    public List<ClassRoom> findUsefulClassRoomsList2() {
+        QueryWrapper<ClassRoom> wrapper = new QueryWrapper<>();
+        wrapper.eq("r_status","1");
+        List<ClassRoom> classRooms = classRoomMapper.selectList(wrapper);
+        return classRooms;
+    }
+
 }

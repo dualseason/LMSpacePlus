@@ -50,7 +50,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
                         .selectAs(Seat::getSeatNum, BookingInfo::getSeatId)
                         .selectAs(ClassRoom::getRRoom, BookingInfo::getRRoom)
                         .selectAs(ClassRoom::getRBuilding, BookingInfo::getRBuilding)
-//                        .leftJoin(Booking.class, Booking::getSeatId, Seat::getSeatId)
+                        .selectAs(ClassRoom::getRId,BookingInfo::getRId)
                         .innerJoin(Seat.class,Seat::getSeatId,Booking::getSeatId)//指定要连接的表，设置表相等字段
                         .innerJoin(ClassRoom.class, ClassRoom::getRId,Seat::getRId)
                         .eq(Booking::getBUseful,1)

@@ -4,8 +4,10 @@ import edu.lingnan.dto.AbsenceReq;
 import edu.lingnan.dto.AbsenceReq2;
 import edu.lingnan.entity.Absence;
 import edu.lingnan.entity.Booking;
+import edu.lingnan.entity.ClassRoom;
 import edu.lingnan.service.AbsenceService;
 import edu.lingnan.service.BookingService;
+import edu.lingnan.service.ClassRoomService;
 import edu.lingnan.util.DateUtil;
 import edu.lingnan.vo.Result;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +28,8 @@ public class AbsenceController {
     @Autowired
     private BookingService bookingService;
 
+    @Autowired
+    private ClassRoomService classRoomService;
     /**
      * 查找所有用户
      * @return
@@ -84,6 +88,16 @@ public class AbsenceController {
             hashMap.put("a_time",format.format(new Date()));
             boolean b = absenceService.removeByMap(hashMap);
             return new Result(true,1,"操作成功");
+        }
+    }
+    @ApiOperation("考勤操作，首先得到已开放的教室列表")
+    @GetMapping("/getAllOpenClassroomsList")
+    public Result getAllOpenClassroomsList(){
+        List<ClassRoom> list2 = classRoomService.findUsefulClassRoomsList2();
+        if(list2.size()>0){
+            return new Result(true,list2,"操作成功");
+        }else {
+            return new Result(false,0,"找不到已开放的教室列表");
         }
     }
 }

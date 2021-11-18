@@ -3,6 +3,7 @@ package edu.lingnan.controller;
 import edu.lingnan.dto.StudentCheckReq;
 import edu.lingnan.dto.StudentReq;
 import edu.lingnan.dto.result.StudentBookingInfo;
+import edu.lingnan.dto.result.StudentLoginNoBookingInfo;
 import edu.lingnan.entity.ClassRoom;
 import edu.lingnan.entity.Student;
 import edu.lingnan.service.BookingService;
@@ -82,7 +83,11 @@ public class StudentController {
                 return new Result(true,studentBookingInfo,"操作成功");
             }else {
                 List<ClassRoom> roomsList = classRoomService.findUsefulClassRoomsList();
-                return new Result(true,roomsList,"操作成功");
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("s_id",student.getSId());
+                Student student1 = studentService.checkLogin(map);
+                StudentLoginNoBookingInfo info = new StudentLoginNoBookingInfo(roomsList, student1);
+                return new Result(true,info,"操作成功");
             }
         }
         else {

@@ -78,10 +78,8 @@ public class RecordController {
     @GetMapping("/record/getStudentRecordList/{sId}")
     public Result getStudentRecordList(@PathVariable("sId") String sId){
         List<StudentRecordInfo> studentRecordList = recordService.getStudentRecordList(sId);
-        if(studentRecordList.size() > 0){
             return new Result(true,studentRecordList,"操作成功");
-        }
-        return new Result(false,"null","操作失败");
+
     }
 
 }
