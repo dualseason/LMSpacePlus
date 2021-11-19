@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,13 +27,13 @@ import java.util.List;
 
 @RestController
 public class StudentController {
-    @Autowired
+    @Resource
     private StudentService studentService;
-    @Autowired
+    @Resource
     private BookingService bookingService;
-    @Autowired
+    @Resource
     private ClassRoomService classRoomService;
-    @Autowired
+    @Resource
     private SeatService seatService;
 
     @GetMapping("/students")

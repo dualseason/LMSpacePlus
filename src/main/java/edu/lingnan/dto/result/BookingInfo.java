@@ -21,4 +21,6 @@ public class BookingInfo {
     private String rBuilding;
     @ApiModelProperty(name = "todayStatus",value = "当天状态",example = "")
     private boolean todayStatus;
+    @ApiModelProperty(name="todayRecord",value = "当天缺勤状态",example = "")
+    private boolean todayRecord;
 }

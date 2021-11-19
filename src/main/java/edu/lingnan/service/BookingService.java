@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface BookingService extends IService<Booking> {
     List<BookingInfo> queryUserfulBookingList();
+    List<BookingInfo> queryUserfulBookingList2();
     boolean queryStudentUserfulBookingInfo(String sId);
     long[] getTotalBookingDays(String sId);
     long[] getTotalBookingDays2(String sId);

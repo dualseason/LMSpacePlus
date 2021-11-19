@@ -9,7 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @MapperScan("edu.lingnan.mapper")
 @EnableSwagger2
-//@EnableScheduling(0 0 0 4 * *)
+@EnableScheduling
 public class LmspaceplusApplication {
 
     public static void main(String[] args) {

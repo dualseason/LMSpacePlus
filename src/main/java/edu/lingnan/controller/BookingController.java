@@ -15,18 +15,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 
 @RestController
 public class BookingController {
-    @Autowired
+    @Resource
     private BookingService bookingService;
-    @Autowired
+    @Resource
     private StudentService studentService;
-    @Autowired
+    @Resource
     private AbsenceService absenceService;
-    @Autowired
+    @Resource
     private RecordService recordService;
 
     /**
@@ -41,7 +42,7 @@ public class BookingController {
     @ApiOperation(value = "查询所有有效的预约记录，用于考勤")
     @GetMapping("/queryUserfulBookingList/{rId}")
     public Result queryUserfulBookingList(@PathVariable("rId") Integer rId){
-        List<BookingInfo> bookingInfos = bookingService.queryUserfulBookingList();
+        List<BookingInfo> bookingInfos = bookingService.queryUserfulBookingList2();
         for (int i = 0; i < bookingInfos.size(); i++) {
             BookingInfo info = bookingInfos.get(i);
             if(info.getRId() != rId){

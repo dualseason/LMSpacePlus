@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 public class ClassRoomController {
-    @Autowired
+    @Resource
     private ClassRoomService classRoomService;
     @ApiOperation(value = "管理教室，查看所有教室信息")
     @GetMapping("/classRooms")

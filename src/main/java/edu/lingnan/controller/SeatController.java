@@ -17,22 +17,23 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 public class SeatController {
-    @Autowired
+    @Resource
     private SeatService seatService;
 
-    @Autowired
+    @Resource
     private BookingService bookingService;
 
-    @Autowired
+    @Resource
     private ClassRoomService room;
 
-    @Autowired
+    @Resource
     private RecordService recordService;
 
     @GetMapping("/seats")

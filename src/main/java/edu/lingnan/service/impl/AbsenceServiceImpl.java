@@ -83,4 +83,34 @@ public class AbsenceServiceImpl extends ServiceImpl<AbsenceMapper, Absence> impl
         }
         return bookingInfos;
     }
+
+    @Override
+    public List<BookingInfo> getCurrentNoRecordBookingList2(List<BookingInfo> bookingInfos) {
+        HashMap<String, Object> map = new HashMap<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        int count = bookingInfos.size();
+        for (int i = 0; i < bookingInfos.size(); i++) {
+            BookingInfo bookingInfo = bookingInfos.get(i);
+            bookingInfo.setTodayRecord(false);
+            map.put("b_id",bookingInfo.getBId());
+            List<Record> records = recordMapper.selectByMap(map);
+            String format1 = format.format(new Date());
+
+            for (int j = 0; j < records.size(); j++) {
+                try {
+                    Date parse = format.parse(records.get(j).getReStartTime());
+                    Date parse1 = format.parse(format1);
+                    //如果当天时间在请假时间之间
+                    if((parse.getTime() + Integer.valueOf(records.get(j).getReDays())*24*60*60*1000) >= parse1.getTime()&&parse1.getTime()>=parse.getTime()){
+                        bookingInfo.setTodayRecord(true);
+                        bookingInfo.setTodayStatus(false);
+                        break;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return bookingInfos;
+    }
 }

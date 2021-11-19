@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,17 +30,17 @@ import java.util.List;
 @Service
 @Transactional
 public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> implements BookingService {
-    @Autowired
+    @Resource
     private BookingMapper bookingMapper;
-    @Autowired
+    @Resource
     private AbsenceMapper absenceMapper;
-    @Autowired
+    @Resource
     private AbsenceService absenceService;
-    @Autowired
+    @Resource
     private RecordService recordService;
-    @Autowired
+    @Resource
     private SeatMapper seatMapper;
-    @Autowired
+    @Resource
     private ClassRoomMapper classRoomMapper;
     @Override
     public List<BookingInfo> queryUserfulBookingList() {
@@ -84,7 +85,52 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         }
         return bookingInfos;
     }
-//    判断学生是否有预约生效的记录
+
+    @Override
+    public List<BookingInfo> queryUserfulBookingList2() {
+        //查询所有有效的预约记录及座位教室信息
+        List<BookingInfo> bookingInfos = bookingMapper.selectJoinList(BookingInfo.class,
+                new MPJLambdaWrapper<>()
+                        .selectAs(Booking::getBId, BookingInfo::getBId)//参数，要查询的字段，并指定别名
+                        .selectAs(Seat::getSeatNum, BookingInfo::getSeatId)
+                        .selectAs(ClassRoom::getRRoom, BookingInfo::getRRoom)
+                        .selectAs(ClassRoom::getRBuilding, BookingInfo::getRBuilding)
+                        .selectAs(ClassRoom::getRId,BookingInfo::getRId)
+                        .innerJoin(Seat.class,Seat::getSeatId,Booking::getSeatId)//指定要连接的表，设置表相等字段
+                        .innerJoin(ClassRoom.class, ClassRoom::getRId,Seat::getRId)
+                        .eq(Booking::getBUseful,1)
+                        .eq(ClassRoom::getRStatus,1)
+//
+        );
+
+        List<Absence> absences = absenceMapper.selectList(null);
+        /*
+         * 该for循环用于添加正在生效的预约记录的当天考勤状态，通过缺勤记录和预约记录中的相同预约编号，然后在判断缺勤记录的时间和当天时间是否一样
+         * 如果缺勤记录的时间和当天时间一样的话，则该考勤状态为false（缺勤）
+         * */
+        for (int i = 0; i < bookingInfos.size(); i++) {
+            bookingInfos.get(i).setTodayStatus(false);
+            for (int j = 0; j < absences.size(); j++) {
+                if(absences.get(j).getBId()==bookingInfos.get(i).getBId())
+                {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+                    String s = format.format(new Date());
+                    if(s.equals(absences.get(j).getATime()))
+                    {
+                        break;
+                    }
+
+                }
+                if(j==absences.size()-1){
+                    bookingInfos.get(i).setTodayStatus(true);
+                }
+            }
+        }
+        absenceService.getCurrentNoRecordBookingList2(bookingInfos);
+        return bookingInfos;
+    }
+
+    //    判断学生是否有预约生效的记录
     @Override
     public boolean queryStudentUserfulBookingInfo(String sId) {
         HashMap<String, Object> map = new HashMap<>();
@@ -205,7 +251,8 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
         }
         return false;
     }
-    @Scheduled(cron ="0 0/1 * * * ?")
+    @Scheduled(cron ="0 0 1 * * ?")
+//@Scheduled(cron ="0 0 17 * * ?")
     //定时更新预约信息
     @Override
     public List<Booking> updateBookingInfoTiming() {

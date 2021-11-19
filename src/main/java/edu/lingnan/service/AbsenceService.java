@@ -11,4 +11,5 @@ public interface AbsenceService extends IService<Absence> {
     Long getTotalAbsenceDays(Collection<Integer> bIds);
     Long getUsefulBookingAbsenceDays(Integer bid);
     List<BookingInfo> getCurrentNoRecordBookingList(List<BookingInfo> bookingInfos);
+    List<BookingInfo> getCurrentNoRecordBookingList2(List<BookingInfo> bookingInfos);
 }

@@ -2,9 +2,12 @@ package edu.lingnan.controller;
 
 import edu.lingnan.dto.AbsenceReq;
 import edu.lingnan.dto.AbsenceReq2;
+import edu.lingnan.dto.result.BookingInfo;
 import edu.lingnan.entity.Absence;
 import edu.lingnan.entity.Booking;
 import edu.lingnan.entity.ClassRoom;
+import edu.lingnan.entity.Record;
+import edu.lingnan.mapper.RecordMapper;
 import edu.lingnan.service.AbsenceService;
 import edu.lingnan.service.BookingService;
 import edu.lingnan.service.ClassRoomService;
@@ -14,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,14 +27,17 @@ import java.util.stream.Collectors;
 
 @RestController
 public class AbsenceController {
-    @Autowired
+    @Resource
     private AbsenceService absenceService;
 
-    @Autowired
+    @Resource
     private BookingService bookingService;
 
-    @Autowired
+    @Resource
     private ClassRoomService classRoomService;
+
+    @Resource
+    private RecordMapper recordMapper;
     /**
      * 查找所有用户
      * @return
@@ -72,8 +80,26 @@ public class AbsenceController {
             return new Result(false,0,"该预约记录不存在或已失效");
         }
         if("false".equals(absenceReq2.getTodayStatus())){
-            Absence absence = new Absence();
+            //******************
+            HashMap<String, Object> map2 = new HashMap<>();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+                map2.put("b_id",absenceReq2.getBId());
+                List<Record> records = recordMapper.selectByMap(map2);
+                String format1 = format.format(new Date());
+                for (int j = 0; j < records.size(); j++) {
+                    try {
+                        Date parse = format.parse(records.get(j).getReStartTime());
+                        Date parse1 = format.parse(format1);
+                        //如果当天时间在请假时间之间
+                        if((parse.getTime() + Integer.valueOf(records.get(j).getReDays())*24*60*60*1000) >= parse1.getTime()&&parse1.getTime()>=parse.getTime()){
+                            return new Result(false,null,"该学生已经请假，操作失败");
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            //******************
+            Absence absence = new Absence();
             absence.setATime(format.format(new Date()));
             absence.setBId(absenceReq2.getBId());
             boolean save = absenceService.save(absence);

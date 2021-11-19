@@ -11,14 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 
 @RestController
 public class RecordController {
-    @Autowired
+    @Resource
     private RecordService recordService;
-    @Autowired
+    @Resource
     private BookingService bookingService;
     @GetMapping("/records")
     public Result findAll() {
