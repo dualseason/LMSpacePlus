@@ -16,4 +16,5 @@ public interface SeatService extends IService<Seat> {
     List<Seat> getAccessibleSeat();
     void provideOneSeatForStudent(StudentReq studentReq);
     int returnSeat(Booking booking);
+    int returnSeat2(Booking booking);
 }

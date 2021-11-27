@@ -1,16 +1,16 @@
 spring:
   datasource:
-    driver-class-name: oracle.jdbc.driver.OracleDriver
-    url: jdbc:oracle:thin:@192.168.198.13:1521:iddbsvr1
-    username: usr_mkj
-    password: B9MV2T#CMx6Q
-#    driver-class-name: com.mysql.jdbc.Driver
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    url: jdbc:oracle:thin:@159.75.103.206:1521:helowin
+#    username: lmspace
+#    password: chen0215
+    driver-class-name: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/booking
 #    username: root
 #    password: 123456
-#    url: jdbc:mysql://159.75.103.206:3306/lmspace
-#    username: LMSpace
-#    password: HRZKGPF7C5t4ddBz
+    url: jdbc:mysql://159.75.103.206:3306/lmspace
+    username: LMSpace
+    password: HRZKGPF7C5t4ddBz
 
   #druid控制台访问地址：http://localhost:8080/druid
   druid:

@@ -21,6 +21,7 @@ public class RecordController {
     private RecordService recordService;
     @Resource
     private BookingService bookingService;
+    @ApiOperation("查询所有的请假信息")
     @GetMapping("/records")
     public Result findAll() {
         List<Record> list = recordService.list();

@@ -23,4 +23,14 @@ public class BookingInfo {
     private boolean todayStatus;
     @ApiModelProperty(name="todayRecord",value = "当天缺勤状态",example = "")
     private boolean todayRecord;
+    @ApiModelProperty(name = "sId",value = "学号")
+    private String sId;
+    @ApiModelProperty(name = "sName",value = "学生名称")
+    private String sName;
+    @ApiModelProperty(name = "sCollege",value = "学院")
+    private String sCollege;
+    @ApiModelProperty(name = "sGrade",value = "年级")
+    private String sGrade;
+    @ApiModelProperty(name = "sClass",value = "班级")
+    private String sClass;
 }

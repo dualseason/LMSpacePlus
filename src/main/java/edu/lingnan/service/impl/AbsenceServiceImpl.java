@@ -101,7 +101,7 @@ public class AbsenceServiceImpl extends ServiceImpl<AbsenceMapper, Absence> impl
                     Date parse = format.parse(records.get(j).getReStartTime());
                     Date parse1 = format.parse(format1);
                     //如果当天时间在请假时间之间
-                    if((parse.getTime() + Integer.valueOf(records.get(j).getReDays())*24*60*60*1000) >= parse1.getTime()&&parse1.getTime()>=parse.getTime()){
+                    if((parse.getTime() + (Integer.valueOf(records.get(j).getReDays())-1)*24*60*60*1000) >= parse1.getTime()&&parse1.getTime()>=parse.getTime()){
                         bookingInfo.setTodayRecord(true);
                         bookingInfo.setTodayStatus(false);
                         break;

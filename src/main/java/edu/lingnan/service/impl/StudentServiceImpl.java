@@ -67,8 +67,9 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         return i;
     }
 //    判断该学生是否已经注册成功并通过审核
+    //返回值 1代表成功，2代表用户名不存在，3代表密码错误，4代表未通过审核
     @Override
-    public boolean checkStudent(Student student) {
+    public int checkStudent(Student student) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("s_id",student.getSId());
         List<Student> students = studentMapper.selectByMap(map);
@@ -76,18 +77,19 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         if(students.size() > 0)
         {
             student1 = students.get(0);
-        }
-        if(student1 != null)
-        {
             if(student1.getSPassword().equals(student.getSPassword()) && student1.getSStatus().equals("1"))
             {
-                return true;
-            }else {
-                return false;
+                return 1;
+            }else if(student1.getSPassword().equals(student.getSPassword())&&student1.getSStatus().equals("2")){
+                return 4;
+            }
+            else if(!student1.getSPassword().equals(student.getSPassword())){
+                return 3;
             }
         }
 
-        return false;
+
+        return 2;
     }
 //    查询学生有效预约记录的相关信息，前提条件，该学生已经预约到座位并且该座位正在生效
     @Override

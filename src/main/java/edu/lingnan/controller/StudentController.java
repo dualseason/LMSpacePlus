@@ -70,12 +70,12 @@ public class StudentController {
         }
         return new Result(false, null, "操作失败");
     }
-
+    //返回值 1代表成功，2代表用户名不存在，3代表密码错误，4代表未通过审核
     @ApiOperation(value = "学生登录，如果登录成功，则根据该学生的预约状态返回响应的数据")
     @PostMapping("/student/login2")
     public Result studentLogin2(@RequestBody Student student) {
-        boolean b = studentService.checkStudent(student);
-        if(b)
+        int b = studentService.checkStudent(student);
+        if(b==1)
         {
             boolean b1 = bookingService.queryStudentUserfulBookingInfo(student.getSId());
             if(b1)
@@ -91,8 +91,13 @@ public class StudentController {
                 return new Result(true,info,"操作成功");
             }
         }
-        else {
-            return new Result(false,null,"操作失败");
+        else if(b==2){
+            return new Result(false,2,"学号不存在");
+        }
+        else if(b==3){
+            return new Result(false,3,"密码错误");
+        } else {
+            return new Result(false,4,"该学生未通过审核");
         }
 
     }

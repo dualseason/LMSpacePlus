@@ -42,6 +42,7 @@ public class AbsenceController {
      * 查找所有用户
      * @return
      */
+    @ApiOperation("查询所有的缺勤信息")
     @GetMapping("/absences")
     public Result findAll() {
         List<Absence> list = absenceService.list();
@@ -98,6 +99,12 @@ public class AbsenceController {
                         e.printStackTrace();
                     }
                 }
+            List<Absence> list = absenceService.list();
+            for (Absence absence : list) {
+                if(absence.getBId()==absence.getBId() && absence.getATime().equals(format1)){
+                    return new Result(false,null,"该学生在当天已经有缺勤记录");
+                }
+            }
             //******************
             Absence absence = new Absence();
             absence.setATime(format.format(new Date()));
@@ -126,4 +133,5 @@ public class AbsenceController {
             return new Result(false,0,"找不到已开放的教室列表");
         }
     }
+
 }

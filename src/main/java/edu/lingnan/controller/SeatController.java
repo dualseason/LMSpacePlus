@@ -129,7 +129,7 @@ public class SeatController {
         Booking booking = new Booking();
         booking.setBEndTime(seatReturn.getBEndTime());
         booking.setBId(seatReturn.getBId());
-        int i = seatService.returnSeat(booking);
+        int i = seatService.returnSeat2(booking);
         if(i > 0)
         {
             return new Result(true,1,"操作成功");

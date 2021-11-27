@@ -34,6 +34,7 @@ public class BookingController {
      * 查找所有预定记录
      * @return
      */
+    @ApiOperation("查询所有的预约记录")
     @GetMapping("/bookings")
     public Result findAll() {
         List<Booking> list = bookingService.list();
